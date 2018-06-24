@@ -1,0 +1,20 @@
+Package: rpegeos
+Title: Pathway enrichment for gene expression signatures
+Version: 0.1.0
+Author: Diogo M. Camacho
+Maintainer: Diogo M. Camacho <diogo.camacho@wyss.harvard.edu>
+Description: Pathway enrichment based on tf-idf.
+License: GPL-3 + file LICENSE
+Depends: R (>= 3.4.0)
+Imports: dplyr,
+  ggplot2,
+  magrittr,
+  Matrix,
+  tibble,
+  tidytext
+Encoding: UTF-8
+LazyData: true
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1

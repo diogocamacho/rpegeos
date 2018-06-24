@@ -1,0 +1,198 @@
+---
+title: "Pathway enrichment for gene sets"
+author: "Diogo M. Camacho"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(tidyverse)
+library(tidytext)
+library(Matrix)
+library(limma)
+library(pegs)
+library(org.Hs.eg.db)
+library(GO.db)
+
+
+
+```
+
+
+## Introduction
+This package is aimed at performing pathway enrichments for gene sets based on tf-idf.  Tf-idf, for term frequency-inverse document frequency, is a concept from natural language processing and text mining that is used to classify the relevance of words ("terms") in a document, given a corpus of documents.  In the context of pathway enrichments, we can conceptualize each gene as a word in a given pathway (the "document"), where the corpus of documents can be seen as the sources where we find these sets ([KEGG](https://www.genome.jp/kegg/), [Reactome](https://reactome.org), [GO](http://geneontology.org), and so on.)  Packages from [Bioconductor](https://www.bioconductor.org) exist that allow one to explore many different pathway sets, as well as a multitude of different sources can be explored (e.g., the [Consensus Pathway DataBase](http://cpdb.molgen.mpg.de)). 
+
+
+## Very brief intro to pathway enrichment
+The overarching question being asked when we perform pathway enrcihment is "Given this particular gene signature that relates to a specific experimental setup, what is so special about the genes that show differential abundance?"  Thus, Pathway enrichment is performed in order for the researcher to gain further insights into a gene expression signature, by understanding which pathways and/or biological processes that are mostly represented in that gene signature.  Many tools are available for that purpose, ranging from [GSEA](http://) to approaches based on Fisher's exact test (see my package [ORANGES](http://github.com/diogocamacho/oranges) as an example.)  Here I will introduce a novel approach to perform pathway enrichments that is based on the notions of term frequency (tf) and inverse document frequency (idf).  
+
+### Term frequency and inverse document frequency
+The tf-idf is a concept from text mining and natural language processing that weighs the relevance of a given word (a "term") in a collection of documents.  The term frequency (tf) provides a count of a given word in a given document:
+
+$$tf(w,d) = \frac{\sum_{i=1}^{d} w_i}{N}$$
+
+where _N_ is the total number of terms (words) in a document _d_ and $\sum_{i=1}^{d} w_i$ gives us the occurence of the word _w_ in the document _d_. The inverse document frequency (idf) computes the relevance of a word in the document corpus, or, in information theoretic terms, how much information is carried by a given word: 
+
+$$idf(w,D) = log\left(\frac{N}{|\{d \in D:w \in D\}|}\right)$$ 
+
+where $|\{d \in D:w \in D\}|$ describes how many documents _d_ contain the word _w_ in the corpus _D_. From these two equations it follows simply that:
+
+$$tfidf(w,d,D) = tf(w,d) \times idf(w,D)$$
+
+## Tf-idf in pathway enrichment
+Given the description above, we can explore the concepts of tf-idf for pathway ennrichments.  For this, we will consider every pathway as a document _d_, every gene in those pathways as a term _w_, and the collection of pathways from a given source as the corpus _D_.  Because a gene can only be present in a pathway once, its frequency reduces to $\frac{1}{N}$, where _N_ is the number of genes in a pathway.
+
+## Example: Gene Ontology enrichment
+In the following section I will provide an example on how `pegs` works given a gene signature of interest.  I will be using a data set from GEO on Asian females with non-small cell lung cancer ([here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19804)), and I will be using `limma` package to calculate the fold differences between genes in tumor tissue versus healthy adjacent tissue.  Finally, I will define the pathway sets from Gene Ontology to perform the enrichment on. 
+
+### Data
+The data has been processed and summarized prior to the example.  Feel free to contact me to discuss that procedure. 
+
+```{r get_data}
+attach(lung_data)
+
+expression_lung <- lung_data[[1]]
+genes_lung <- lung_data[[2]]
+samples_lung <- lung_data[[3]]
+```
+
+For the purpose of this example I will consider the set of tumor samples as my case group and the set of normal adjacent tissue as my control group.  Analyses of changes in expression patterns and enrichment patterns on the different stages of lung cancer can be done separately. 
+
+
+```{r select_individuals}
+tumor_lung <- grep("tumor",samples_lung$clinical_diagnosis)
+tumor_lung <- which(colnames(expression_lung) %in% samples_lung$cel_file[tumor_lung])
+healthy_lung <- grep("normal",samples_lung$clinical_diagnosis)
+healthy_lung <- which(colnames(expression_lung) %in% samples_lung$cel_file[healthy_lung])
+```
+
+Now we can perform the differential expression analysis.  
+
+```{r differential_expression}
+tmp_data <- expression_lung[ , c(healthy_lung, tumor_lung)] # re-ordering of the expression matrix
+expdes <- matrix(0, nrow = ncol(tmp_data), ncol = 2) # experimental design
+
+expdes[seq(1, length(healthy_lung)), 1] <- 1
+expdes[seq(length(healthy_lung) + 1, length(healthy_lung) + length(tumor_lung)), 2] <- 1
+colnames(expdes) <- c("control", "case")
+contmat <- makeContrasts(case - control, levels = expdes) # contrast matrix
+
+limma.fit <- lmFit(object = tmp_data, design = expdes)
+limma.fit <- contrasts.fit(fit = limma.fit, contrasts = contmat)
+limma.fit <- eBayes(fit = limma.fit)
+    
+res <- topTable(fit = limma.fit, 
+                coef = 1, 
+                number = nrow(tmp_data),
+                sort.by = "none",
+                adjust.method = "fdr") # dge results
+```
+
+We can visualize the changes using a volcano plot:
+
+```{r volcano_plot}
+res %>% 
+  ggplot() + 
+  geom_point(aes(x = logFC, y = -log10(adj.P.Val)), color = "gray") + 
+  geom_point(data = subset(res, adj.P.Val < 0.01 & abs(logFC) > 1), aes(x = logFC, y = -log10(adj.P.Val)), color = "red") +
+  labs(x = "log2(Fold change)", y = "-log10(q-value)") +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 20, face = "bold"))
+```
+
+For the purpose of example, I will consider the genes that are differentially expressed at a significant FDR-corrected q-value < 0.05 and an absolute fold-change > 2, which results in `r length(which(res$adj.P.Val < 0.01 & abs(res$logFC) > 1))` differentially expressed genes, with `r length(which(res$adj.P.Val < 0.01 & res$logFC > 1))` being up-regulated and `r length(which(res$adj.P.Val < 0.01 & res$logFC < -1))` being down-regulated.  
+
+
+### Map genes to Gene Ontology terms
+To build our document-term matrix for pathway enrichment, we will use the annotations for genes provided in the `org.Hs.eg.db` package(for human genes) and we will get the pathway names from the `GO.db` package. 
+
+```{r gene_mappings}
+
+entrez2go <- as_data_frame(as.data.frame(org.Hs.egGO))
+entrez2go <- entrez2go %>% dplyr::filter(., Evidence != "ND") # <-- remove mappings with no biological data available
+
+# subset only to biological process terms
+entrez2go <- entrez2go %>% dplyr::filter(., Ontology == "BP")
+
+```
+
+From these mappings we can now generate a sparse matrix representation of the document-term matrix.  As we generated a tibble, we can use the `cast_sparse` function from the `tidytext` package to generate the document-term matrix:
+
+```{r generate_dtm}
+dtm <- cast_sparse(data = entrez2go, row = go_id, column = gene_id)
+```
+
+This matrix is what we will use for the enrichment analysis.  Do note that the columns of the document-term matrix are EntrezIDs and that the rows are GO terms.  However, this can easily be modified to have whichever names you want.  As a caution, please keep in mind that the query vector for the enrichment will need to have the same gene ids as those used in the document term matrix (we will come back to this later.)
+
+For the sake of this example, I will remove pathways/GO terms that are either too large or too small:
+
+```{r clean_dtm}
+rs <- Matrix::rowSums(dtm)
+nix <- which(rs > 400 | rs < 5)
+
+if (length(nix) != 0) {
+  dtm <- dtm[-nix, ]
+}
+
+# because we cleaned the rows, let's make sure there's no columns that are irrelevant (not present in any document)
+cs <- Matrix::colSums(dtm)
+nix <- which(cs == 0)
+
+if (length(nix) != 0) {
+  dtm <- dtm[ , -nix]
+}
+
+# get pathway names
+pnames <- AnnotationDbi::select(x = GO.db, keys = rownames(dtm), keytype = "GOID", columns = "TERM")
+pnames <- pnames[, c(2,1)]
+pnames[, 2] <- rep("GO", nrow(pnames))
+
+```
+
+
+### Calculate tf-idf matrix for pathway matrix
+As we generated a tibble, we can use quick tricks from the `tidytext` package to calculate the tf-idf matrix.  We will do this using the `tidy_tfidf` function: 
+
+```{r calculate_tfidf}
+tfidf_dtm <- tidy_tfidf(data_matrix = dtm)
+```
+
+With this in hand, we will also need the cross-product of the tf-idf matrix ahead of performing the enrichment, as it is a key component of the cosine similarity metric: 
+
+```{r crossproduct_matrix}
+cpm <- crossprod_matrix(tfidf_matrix = tfidf_dtm)
+```
+
+
+### Run pathway enrichment
+We now have all the elements necessary to perform the enrichment analyses on our set of differentially expressed genes.  That is easily done using the `run_enrichment` wrapper function in the `pegs` package.  For illustrative purposes, I will focus on the genes that have increased expression in the lung cancer samples, with fold-change > 2 and q < 0.01. 
+
+```{r run_enrichment}
+qgs <- genes_lung$ENTREZID[which(res$logFC > 1 & res$adj.P.Val < 0.01)] # <--- query gene set
+
+lung_enrichment <- run_enrichment(gene_set = qgs,
+                                  pathway_names = pnames, 
+                                  tfidf_matrix = tfidf_dtm, 
+                                  tfidf_crossproduct = cpm, 
+                                  num_random = 10000)
+
+lung_enrichment %>% 
+  dplyr::filter(., probability_random < 0.001) %>% 
+  dplyr::arrange(., desc(cosine_similarity)) %>%
+  dplyr::slice(1:15)
+
+plot_enrichment(results_df = lung_enrichment, random_thr = 0.001, max_pathways = 15)
+
+```
+
+

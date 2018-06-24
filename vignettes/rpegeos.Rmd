@@ -19,7 +19,7 @@ library(tidyverse)
 library(tidytext)
 library(Matrix)
 library(limma)
-library(pegs)
+library(rpegeos)
 library(org.Hs.eg.db)
 library(GO.db)
 
@@ -164,7 +164,7 @@ pnames[, 2] <- rep("GO", nrow(pnames))
 As we generated a tibble, we can use quick tricks from the `tidytext` package to calculate the tf-idf matrix.  We will do this using the `tidy_tfidf` function: 
 
 ```{r calculate_tfidf}
-tfidf_dtm <- tidy_tfidf(data_matrix = dtm)
+tfidf_dtm <- rpegeos_tfidf(data_matrix = dtm)
 ```
 
 With this in hand, we will also need the cross-product of the tf-idf matrix ahead of performing the enrichment, as it is a key component of the cosine similarity metric: 
@@ -180,7 +180,7 @@ We now have all the elements necessary to perform the enrichment analyses on our
 ```{r run_enrichment}
 qgs <- genes_lung$ENTREZID[which(res$logFC > 1 & res$adj.P.Val < 0.01)] # <--- query gene set
 
-lung_enrichment <- run_enrichment(gene_set = qgs,
+lung_enrichment <- enrich_geneset(gene_set = qgs,
                                   pathway_names = pnames, 
                                   tfidf_matrix = tfidf_dtm, 
                                   tfidf_crossproduct = cpm, 

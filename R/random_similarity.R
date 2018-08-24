@@ -1,6 +1,6 @@
 #' Random similarities
 #'
-#' \code{random_similarity} computes the cosine similarity between the set of randomized gene sets defined in \link{\code{random_sets}} and the pathway tf-idf matrix. It calls the \code{\link{cosine_similarity}} function.
+#' \code{random_similarity} computes the cosine similarity between the set of randomized gene sets defined in \code{\link{random_sets}} and the pathway tf-idf matrix. It calls the \code{\link{cosine_similarity}} function.
 #'
 #' As the output of function we get a matrix that is PxR, where P is the number of pathways and R is the number of randomized sets.  This implies that each *column* in the matrix corresponds to the cosine similarity between that random set and each one of the pathways.
 #'

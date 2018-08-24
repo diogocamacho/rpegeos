@@ -7,7 +7,7 @@
 #'
 #' @param data_matrix Sparse document-term matrix (generated with Matrix package)
 #' @return A sparse matrix with the computed tf-idf
-rpegeos_tfidf <- function(data_matrix)
+tfidf <- function(data_matrix)
 {
   # tidy data ----
   dtm1 <- tidytext::tidy(data_matrix)

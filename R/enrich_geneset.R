@@ -6,7 +6,7 @@
 #' The output of the wrapper is a tidy data frame with all the enrichment scores that are better than 0.
 #'
 #' @param gene_set Query gene set of interest.  IDs on gene set need to match colnames of tf-idf matrix.
-#' @param pathway_tfidf tf-idf matrix for pathway set. Column names are gene ids (EntrezIDs or gene symbols). Computed with \code{\link{rpegeos_tfidf}}
+#' @param pathway_tfidf tf-idf matrix for pathway set. Column names are gene ids (EntrezIDs or gene symbols). Computed with \code{\link{tfidf}}
 #' @param pathway_names Pathway names for pathway set, correspond to the rows of the tf-idf matrix.  Can be a Nx1 or Nx2 object: if Nx1, use pathway names; if Nx2, column 1 is pathway name, column 2 is pathway set source (e.g., KEGG, reactome, GO)
 #' @param tfidf_crossproduct Cross-product of the tf-idf matrix. Computed with \code{\link{crossprod_matrix}}.
 #' @param num_random Number of random sets to be generated to calculate significance of enrichment.  Defaults to 10,000.

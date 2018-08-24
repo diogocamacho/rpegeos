@@ -9,7 +9,7 @@ cosine_similarity(query_vector, tfidf_matrix, tfidf_crossprod_mat)
 \arguments{
 \item{query_vector}{A vector to compare to the tf-idf matrix. Length of vector is equal to number of columns of tf-idf matrix}
 
-\item{tfidf_matrix}{Sparse tf-idf matrix (computed from \code{\link{rpegeos_tfidf}})}
+\item{tfidf_matrix}{Sparse tf-idf matrix (computed from \code{\link{tfidf}})}
 
 \item{tfidf_crossprod_mat}{The cross-product matrix for the tf-idf matrix (computed with \code{\link{crossprod_matrix}})}
 }

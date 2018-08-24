@@ -9,7 +9,7 @@ pathway_genes(gene_set, pathway_tfidf)
 \arguments{
 \item{gene_set}{Query gene set.  IDs of genes match colnames of tf-idf matrix.}
 
-\item{pathway_tfidf}{tf-idf matrix computed with \code{\link{rpegeos_tfidf}}}
+\item{pathway_tfidf}{tf-idf matrix computed with \code{\link{tfidf}}}
 }
 \value{
 Returns Nx2 tibble with number of genes and gene names matched to any given pathway.

@@ -162,7 +162,7 @@ pnames[, 2] <- rep("GO", nrow(pnames))
 As we generated a tibble, we can use quick tricks from the `tidytext` package to calculate the tf-idf matrix.  We will do this using the `tidy_tfidf` function: 
 
 ```{r calculate_tfidf}
-tfidf_dtm <- rpegeos_tfidf(data_matrix = dtm)
+tfidf_dtm <- tfidf(data_matrix = dtm)
 ```
 
 With this in hand, we will also need the cross-product of the tf-idf matrix ahead of performing the enrichment, as it is a key component of the cosine similarity metric: 
@@ -176,20 +176,20 @@ cpm <- crossprod_matrix(tfidf_matrix = tfidf_dtm)
 We now have all the elements necessary to perform the enrichment analyses on our set of differentially expressed genes.  That is easily done using the `run_enrichment` wrapper function in the `pegs` package.  For illustrative purposes, I will focus on the genes that have increased expression in the lung cancer samples, with fold-change > 2 and q < 0.01. 
 
 ```{r run_enrichment}
-qgs <- genes_lung$ENTREZID[which(res$logFC > 1 & res$adj.P.Val < 0.01)] # <--- query gene set
+qgs <- G$ENTREZID[which(res$logFC > 1 & res$adj.P.Val < 0.01)] # <--- query gene set
 
-lung_enrichment <- enrich_geneset(gene_set = qgs,
+rpegeos_enrichment <- enrich_geneset(gene_set = qgs,
                                   pathway_names = pnames, 
                                   tfidf_matrix = tfidf_dtm, 
                                   tfidf_crossproduct = cpm, 
                                   num_random = 10000)
 
-lung_enrichment %>% 
+rpegeos_enrichment %>% 
   dplyr::filter(., probability_random < 0.001) %>% 
   dplyr::arrange(., desc(cosine_similarity)) %>%
   dplyr::slice(1:15)
 
-plot_enrichment(results_df = lung_enrichment, random_thr = 0.001, max_pathways = 15)
+plot_enrichment(results_df = rpegeos_enrichment, random_thr = 0.001, max_pathways = 15)
 
 ```
 

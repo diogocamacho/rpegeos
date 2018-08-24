@@ -22,9 +22,6 @@ library(limma)
 library(rpegeos)
 library(org.Hs.eg.db)
 library(GO.db)
-
-
-
 ```
 
 
@@ -55,44 +52,46 @@ Given the description above, we can explore the concepts of tf-idf for pathway e
 In the following section I will provide an example on how `pegs` works given a gene signature of interest.  I will be using a data set from GEO on Asian females with non-small cell lung cancer ([here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19804)), and I will be using `limma` package to calculate the fold differences between genes in tumor tissue versus healthy adjacent tissue.  Finally, I will define the pathway sets from Gene Ontology to perform the enrichment on. 
 
 ### Data
-The data has been processed and summarized prior to the example.  Feel free to contact me to discuss that procedure. 
+The data has been processed and summarized prior to the example.  Feel free to [contact me](diogo.camacho@wyss.harvard.edu) to discuss that procedure.  I will be using the data from the [GSE18198](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18198) data set.
 
 ```{r get_data}
-attach(lung_data)
+load("../data/gse18198.RData")
 
-expression_lung <- lung_data[[1]]
-genes_lung <- lung_data[[2]]
-samples_lung <- lung_data[[3]]
+E <- GSE18198$expression
+G <- GSE18198$genes
+S <- GSE18198$samples
+
 ```
 
-For the purpose of this example I will consider the set of tumor samples as my case group and the set of normal adjacent tissue as my control group.  Analyses of changes in expression patterns and enrichment patterns on the different stages of lung cancer can be done separately. 
+For this example, I will look at the HBP-ALL cells treated with SAHM1 versus DMSO control, as performed in the GSEA-InContext paper [here](https://www.biorxiv.org/content/biorxiv/early/2018/02/04/259440.full.pdf).
 
 
 ```{r select_individuals}
-tumor_lung <- grep("tumor",samples_lung$clinical_diagnosis)
-tumor_lung <- which(colnames(expression_lung) %in% samples_lung$cel_file[tumor_lung])
-healthy_lung <- grep("normal",samples_lung$clinical_diagnosis)
-healthy_lung <- which(colnames(expression_lung) %in% samples_lung$cel_file[healthy_lung])
+hbp_all_ids <- grep("HPB-ALL", S[, 35])
+dmso_ids <- grep("DMSO", S$source_name_ch1)
+samh_ids <- grep("SAHM1", S$source_name_ch1)
 ```
 
 Now we can perform the differential expression analysis.  
 
 ```{r differential_expression}
-tmp_data <- expression_lung[ , c(healthy_lung, tumor_lung)] # re-ordering of the expression matrix
-expdes <- matrix(0, nrow = ncol(tmp_data), ncol = 2) # experimental design
+expdes <- matrix(0, nrow = ncol(E), ncol = 4) # experimental design
 
-expdes[seq(1, length(healthy_lung)), 1] <- 1
-expdes[seq(length(healthy_lung) + 1, length(healthy_lung) + length(tumor_lung)), 2] <- 1
-colnames(expdes) <- c("control", "case")
-contmat <- makeContrasts(case - control, levels = expdes) # contrast matrix
+expdes[intersect(hbp_all_ids, dmso_ids), 1] <- 1
+expdes[intersect(hbp_all_ids, samh_ids), 2] <- 1
+expdes[setdiff(dmso_ids, intersect(hbp_all_ids, dmso_ids)), 3] <- 1
+expdes[setdiff(samh_ids, intersect(hbp_all_ids, samh_ids)), 4] <- 1
+colnames(expdes) <- c("hbp_dmso", "hbp_sahm", "kopt_dmso", "kopt_sahm")
 
-limma.fit <- lmFit(object = tmp_data, design = expdes)
-limma.fit <- contrasts.fit(fit = limma.fit, contrasts = contmat)
-limma.fit <- eBayes(fit = limma.fit)
+contmat <- makeContrasts(hbp_sahm - hbp_dmso, levels = expdes) # contrast matrix
+
+limma_fit <- lmFit(object = E, design = expdes)
+limma_fit <- contrasts.fit(fit = limma_fit, contrasts = contmat)
+limma_fit <- eBayes(fit = limma_fit)
     
-res <- topTable(fit = limma.fit, 
+res <- topTable(fit = limma_fit, 
                 coef = 1, 
-                number = nrow(tmp_data),
+                number = nrow(E),
                 sort.by = "none",
                 adjust.method = "fdr") # dge results
 ```
@@ -103,7 +102,7 @@ We can visualize the changes using a volcano plot:
 res %>% 
   ggplot() + 
   geom_point(aes(x = logFC, y = -log10(adj.P.Val)), color = "gray") + 
-  geom_point(data = subset(res, adj.P.Val < 0.01 & abs(logFC) > 1), aes(x = logFC, y = -log10(adj.P.Val)), color = "red") +
+  geom_point(data = subset(res, adj.P.Val < 0.05 & abs(logFC) > 1), aes(x = logFC, y = -log10(adj.P.Val)), color = "red") +
   labs(x = "log2(Fold change)", y = "-log10(q-value)") +
   theme_bw() + 
   theme(axis.text = element_text(size = 12),
@@ -117,7 +116,6 @@ For the purpose of example, I will consider the genes that are differentially ex
 To build our document-term matrix for pathway enrichment, we will use the annotations for genes provided in the `org.Hs.eg.db` package(for human genes) and we will get the pathway names from the `GO.db` package. 
 
 ```{r gene_mappings}
-
 entrez2go <- as_data_frame(as.data.frame(org.Hs.egGO))
 entrez2go <- entrez2go %>% dplyr::filter(., Evidence != "ND") # <-- remove mappings with no biological data available
 

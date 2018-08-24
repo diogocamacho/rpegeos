@@ -2,7 +2,7 @@
 #'
 #' Returns the cosine similarity between 2 vectors
 #'
-#' @param tfidf_matrix Sparse tf-idf matrix (computed from \code{\link{rpegeos_tfidf}})
+#' @param tfidf_matrix Sparse tf-idf matrix (computed from \code{\link{tfidf}})
 #' @param query_vector A vector to compare to the tf-idf matrix. Length of vector is equal to number of columns of tf-idf matrix
 #' @param tfidf_crossprod_mat The cross-product matrix for the tf-idf matrix (computed with \code{\link{crossprod_matrix}})
 #' @return Cosine similarity between query vector and each *row* in tf-idf matrix

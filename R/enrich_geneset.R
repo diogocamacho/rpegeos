@@ -27,7 +27,7 @@ enrich_geneset <- function(gene_set, pathway_names, tfidf_matrix, tfidf_crosspro
   if(length(nix) != 0) {
     genes_per_pathway <- genes_per_pathway[-nix, ]
     tfidf_matrix <- tfidf_matrix[-nix, ]
-    pathway_names <- pathway_names[-nix, ]
+    pathway_names <- pathway_names[-nix]
     tfidf_crossproduct <- tfidf_crossproduct[-nix]
   }
 

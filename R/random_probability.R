@@ -1,12 +1,12 @@
 #' Random probability
 #'
-#' \code{random_probability} computes the cosine similarity between the set of randomized gene sets and the pathway tf-idf matrix. It calls the \code{\link{cosine_similarity}} function and returns the probability of a given cosine similarity being random.
+#' This function computes the cosine similarity between the set of randomized gene sets and the pathway tf-idf matrix. It calls the cosine_similarity function and returns the probability of a given cosine similarity being random.
 #'
 #' @param similarity_results Vector of cosine similarities
 #' @param gs_size Size of the query set
 #' @param num_sets Number of random sets to generate
 #' @param target_tfidf Pathway tf-idf matrix.
-#' @param tfidf_crossprod_mat Cross-product matrix for pathway tf-idf, computed with \code{\link{crossprod_matrix}}
+#' @param tfidf_crossprod_mat Cross-product matrix for pathway tf-idf.
 #' @return A vector of random probabilities for each pathway given the gene set size.
 random_probability <- function(similarity_results, gs_size, num_sets, target_tfidf, tfidf_crossprod_mat) {
   usize <- ncol(target_tfidf)

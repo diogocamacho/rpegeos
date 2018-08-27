@@ -41,18 +41,12 @@ enrich_geneset <- function(gene_set, pathway_names, tfidf_matrix, tfidf_crosspro
                                             query_vector = query_vector,
                                             tfidf_crossprod_mat = tfidf_crossproduct)
 
-  # generate random set
-  rset <- random_sets(number_sets = num_random,
-                      universe_size = ncol(tfidf_matrix),
-                      gene_set_size = sum(query_vector))
-
-  # random similarities
-  rnd_res <- random_similarity(random_set = rset,
-                               tfidf_matrix = tfidf_matrix,
-                               tfidf_crossprod_mat = tfidf_crossproduct)
-
-  # compute significance
-  prandom <- sig_sim(query_similarities, rnd_res)
+  # random probabilities
+  prandom <- random_probability(similarity_results = query_similarities,
+                                gs_size = sum(query_vector),
+                                num_sets = num_random,
+                                target_tfidf = tfidf_matrix,
+                                tfidf_crossprod_mat = tfidf_crossproduct)
 
   # results
   res <- data_frame(cosine_similarity = as.vector(query_similarities),
@@ -61,14 +55,9 @@ enrich_geneset <- function(gene_set, pathway_names, tfidf_matrix, tfidf_crosspro
                     genes_matched = genes_per_pathway$gene_names)
 
   # add pathway names and pathway source
-  if (ncol(pathway_names) == 1) {
-    res <- res %>% tibble::add_column(., pathway_name = pathway_names, .before = 1)
-  } else if (ncol(pathway_names) == 2) {
-    res <- res %>%
-      tibble::add_column(., pathway_source = pathway_names[,2], .before = 1) %>%
-      tibble::add_column(., pathway_name = pathway_names[,1], .before = 2)
-  }
+  res <- res %>% tibble::add_column(., pathway_name = pathway_names, .before = 1)
 
+  # put it all together
   res <- enrichment_results(query_similarities = query_similarities,
                             random_probability = prandom,
                             number_genes = genes_per_pathway$number_genes,

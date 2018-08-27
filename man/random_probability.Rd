@@ -16,11 +16,11 @@ random_probability(similarity_results, gs_size, num_sets, target_tfidf,
 
 \item{target_tfidf}{Pathway tf-idf matrix.}
 
-\item{tfidf_crossprod_mat}{Cross-product matrix for pathway tf-idf, computed with \code{\link{crossprod_matrix}}}
+\item{tfidf_crossprod_mat}{Cross-product matrix for pathway tf-idf.}
 }
 \value{
 A vector of random probabilities for each pathway given the gene set size.
 }
 \description{
-\code{random_probability} computes the cosine similarity between the set of randomized gene sets and the pathway tf-idf matrix. It calls the \code{\link{cosine_similarity}} function and returns the probability of a given cosine similarity being random.
+This function computes the cosine similarity between the set of randomized gene sets and the pathway tf-idf matrix. It calls the cosine_similarity function and returns the probability of a given cosine similarity being random.
 }

@@ -17,6 +17,8 @@ cosine_similarity <- function(query_vector, tfidf_matrix, tfidf_crossprod_mat) {
     x3 <- sqrt(tfidf_crossprod_mat * as.vector(x2))
     y1 <- tfidf_matrix %*% query_vector
     cs <- y1 / x3 # <-- cosine similarity
+  } else {
+    stop("Non-standard query vector. Query vector is either numeric or matrix format. ")
   }
   return(cs)
 }

@@ -22,5 +22,5 @@ random_probability(similarity_results, gs_size, num_sets, target_tfidf,
 A vector of random probabilities for each pathway given the gene set size.
 }
 \description{
-\code{random_probability} computes the cosine similarity between the set of randomized gene sets defined in \link{\code{random_sets}} and the pathway tf-idf matrix. It calls the \code{\link{cosine_similarity}} function and returns the probability of a given cosine similarity being random.
+\code{random_probability} computes the cosine similarity between the set of randomized gene sets and the pathway tf-idf matrix. It calls the \code{\link{cosine_similarity}} function and returns the probability of a given cosine similarity being random.
 }

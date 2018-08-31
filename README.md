@@ -1,5 +1,4 @@
-# rPEGEOS
-Pathway Enrichment for Gene ExpressiOn Signatures
+# rPEGEOS: Pathway Enrichment for Gene ExpressiOn Signatures with R
 
 This package performs pathway enrichment for a given gene expression signature based on tf-idf.
 

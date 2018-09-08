@@ -10,7 +10,9 @@
 tfidf <- function(data_matrix)
 {
   # tidy data ----
-  dtm1 <- tidytext::tidy(data_matrix)
+  dtm1 <- data_matrix
+  rownames(dtm1) <- NULL
+  dtm1 <- tidytext::tidy(dtm1)
 
   # count words in dtm ----
   words1 <- dtm1 %>%

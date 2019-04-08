@@ -26,10 +26,12 @@ enrich_geneset <- function(gene_set)
   tmp <- rpegeos::pathway_sets[[gs]]
 
   # match genes
+  message("Counting gene representation...")
   genes_per_pathway <- pathway_genes(gene_set = gene_set, pathway_tfidf = tmp$tfidf)
 
   # clean up pathways to match to:
   # we will remove those pathways that have no genes mapped to it
+  message("Cleaning up gene sets...")
   nix <- which(genes_per_pathway == 0)
   if(length(nix) != 0) {
     genes_per_pathway <- genes_per_pathway[-nix]
@@ -40,15 +42,18 @@ enrich_geneset <- function(gene_set)
 
   # generate query vector
   # query_vector <- matrix(0,ncol=ncol(sparse_tfidf),nrow=1)
+  message("Generating query vector...")
   query_vector <- integer(length = ncol(tfidf_matrix))
   query_vector[which(colnames(tfidf_matrix) %in% gene_set)] <- 1
 
   # cosine similarity between gene set and pathway_sets
+  message("Computing cosine similarities...")
   query_similarities <- cosine_similarity(tfidf_matrix = tfidf_matrix,
                                             query_vector = query_vector,
                                             tfidf_crossprod_mat = cpm)
 
   # random probabilities
+  message("Running random sets...")
   prandom <- random_probability(similarity_results = query_similarities,
                                 gs_size = sum(query_vector),
                                 num_sets = nrandom,
@@ -56,6 +61,7 @@ enrich_geneset <- function(gene_set)
                                 tfidf_crossprod_mat = cpm)
 
   # results
+  message("Compiling results...")
   res <- enrichment_results(query_similarities = query_similarities,
                             random_probability = prandom,
                             number_genes = genes_per_pathway,
@@ -71,5 +77,6 @@ enrich_geneset <- function(gene_set)
     dplyr::select(., geneset, number_genes, cosine_similarity, probability_random)
 
   return(res)
+  message("Done.")
 
 }

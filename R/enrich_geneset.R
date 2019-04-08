@@ -6,7 +6,7 @@
 #' The output of the wrapper is a tidy data frame with all the enrichment scores that are better than 0.
 #'
 #' @param gene_set Query gene set of interest, provided as Entrez gene IDs.
-#' @return A randomized set of gene sets as a matrix RxN where R is the number of random sets and N is the number of possible genes.
+#' @return A tibble with columns geneset, number_genes, cosine_similarity, and probability_random.
 enrich_geneset <- function(gene_set)
 {
 

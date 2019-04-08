@@ -10,7 +10,7 @@ enrich_geneset(gene_set)
 \item{gene_set}{Query gene set of interest, provided as Entrez gene IDs.}
 }
 \value{
-A randomized set of gene sets as a matrix RxN where R is the number of random sets and N is the number of possible genes.
+A tibble with columns geneset, number_genes, cosine_similarity, and probability_random.
 }
 \description{
 This function is a wrapper for a start to finish pathway enrichment analysis using tf-idf.

@@ -23,7 +23,7 @@ enrich_geneset <- function(gene_set)
   nrandom <- user_inputs()
   message("")
 
-  tmp <- pathway_sets[[gs]]
+  tmp <- rpegeos::pathway_sets[[gs]]
 
   # match genes
   genes_per_pathway <- pathway_genes(gene_set = gene_set, pathway_tfidf = tmp$tfidf)

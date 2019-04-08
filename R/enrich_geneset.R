@@ -68,7 +68,10 @@ enrich_geneset <- function(gene_set)
                             pathway_names = pathway_names)
 
   s <- 1 - log10(res$probability_random) + res$cosine_similarity
-  s[res$probability_random == 0] <- 1 + log10(nrandom) + res$cosine_similarity
+  if (length(res$probability_random == 0) != 0) {
+    s[res$probability_random == 0] <- 1 + log10(nrandom) + res$cosine_similarity
+  }
+
 
   res <- res %>%
     tibble::add_column(., enrichment_score = s) %>%

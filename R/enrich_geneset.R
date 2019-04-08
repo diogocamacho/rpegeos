@@ -67,16 +67,12 @@ enrich_geneset <- function(gene_set)
                             number_genes = genes_per_pathway,
                             pathway_names = pathway_names)
 
-  s <- 1 - log10(res$probability_random) + res$cosine_similarity
-  if (length(res$probability_random == 0) != 0) {
-    s[res$probability_random == 0] <- 1 + log10(nrandom) + res$cosine_similarity
-  }
-
-
   res <- res %>%
-    tibble::add_column(., enrichment_score = s) %>%
+    dplyr::mutate(., a = -log10(probability_random)) %>%
+    dplyr::mutate(., a = replace(x = a, list = probability_random == 0, values = log10(nrandom))) %>%
+    dplyr::mutate(., a = a + cosine_similarity + 1) %>%
     dplyr::filter(., number_genes > 1) %>%
-    dplyr::arrange(., desc(enrichment_score)) %>%
+    dplyr::arrange(., desc(a)) %>%
     dplyr::select(., geneset, number_genes, cosine_similarity, probability_random)
 
   return(res)

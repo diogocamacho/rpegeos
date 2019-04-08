@@ -4,19 +4,10 @@
 \alias{enrich_geneset}
 \title{rPEGEOS wrapper}
 \usage{
-enrich_geneset(gene_set, pathway_names, tfidf_matrix, tfidf_crossproduct,
-  num_random)
+enrich_geneset(gene_set)
 }
 \arguments{
-\item{gene_set}{Query gene set of interest.  IDs on gene set need to match colnames of tf-idf matrix.}
-
-\item{pathway_names}{Pathway names for pathway set, correspond to the rows of the tf-idf matrix.  Can be a Nx1 or Nx2 object: if Nx1, use pathway names; if Nx2, column 1 is pathway name, column 2 is pathway set source (e.g., KEGG, reactome, GO)}
-
-\item{tfidf_matrix}{tf-idf matrix for pathway set. Column names are gene ids (EntrezIDs or gene symbols). Computed with \code{\link{tfidf}}}
-
-\item{tfidf_crossproduct}{Cross-product of the tf-idf matrix. Computed with \code{\link{crossprod_matrix}}.}
-
-\item{num_random}{Number of random sets to be generated to calculate significance of enrichment.  Defaults to 10,000.}
+\item{gene_set}{Query gene set of interest, provided as Entrez gene IDs.}
 }
 \value{
 A randomized set of gene sets as a matrix RxN where R is the number of random sets and N is the number of possible genes.

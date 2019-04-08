@@ -14,9 +14,7 @@ enrichment_results(query_similarities, random_probability, number_genes,
 
 \item{number_genes}{Number of genes as described in \code{\link{pathway_genes}}}
 
-\item{gene_names}{Gene names as described in \code{\link{pathway_genes}}}
-
-\item{pathway_names}{Pathway names for pathway set, correspond to the rows of the tf-idf matrix.  Can be a Nx1 or Nx2 object: if Nx1, use pathway names; if Nx2, column 1 is pathway name, column 2 is pathway set source (e.g., KEGG, reactome, GO)}
+\item{pathway_names}{Pathway names for pathway set, correspond to the rows of the tf-idf matrix.}
 }
 \value{
 Returns the enrichment results for each pathway given the query set.

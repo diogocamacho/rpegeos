@@ -12,8 +12,8 @@ pathway_genes(gene_set, pathway_tfidf)
 \item{pathway_tfidf}{tf-idf matrix computed with \code{\link{tfidf}}}
 }
 \value{
-Returns Nx2 tibble with number of genes and gene names matched to any given pathway.
+Returns vector with number of genes matched to any given pathway.
 }
 \description{
-Returns the number and ids of the genes in the query set that are present in a given pathway.
+Returns the number of genes in the query set that are present in a given pathway.
 }

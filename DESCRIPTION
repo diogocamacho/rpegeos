@@ -1,9 +1,9 @@
 Package: rpegeos
 Title: Pathway enrichment for gene expression signatures
 Version: 1.1.0
-Author: Diogo M. Camacho
+Author@R: person("Diogo M.", "Camacho", email = "diogo.camacho@wyss.harvard.edu", role = c("aut", "cre"))
 Maintainer: Diogo M. Camacho <diogo.camacho@wyss.harvard.edu>
-Description: Pathway enrichment based on tf-idf.
+Description: An algorithm to perform gene set enrichment based on natural language processing approaches. Similar to over-representation analyses, this approach treats each gene set as a bag of words, where the genes are the words for that gene set. The term-frequency and inverse document frequency is calculated and the signficance of the enrichment is done by computing the cosine similarity between the query gene set and gene sets of interest.
 License: GPL-3 + file LICENSE
 Depends: R (>= 3.4.0),
   dplyr,

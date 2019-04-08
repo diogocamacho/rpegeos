@@ -30,7 +30,7 @@ enrich_geneset <- function(gene_set)
 
   # clean up pathways to match to:
   # we will remove those pathways that have no genes mapped to it
-  nix <- which(genes_per_pathway$number_genes == 0)
+  nix <- which(genes_per_pathway == 0)
   if(length(nix) != 0) {
     genes_per_pathway <- genes_per_pathway[-nix]
     tfidf_matrix <- tmp$tfidf[-nix, ]

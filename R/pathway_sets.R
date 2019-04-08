@@ -20,4 +20,4 @@
 #' 16: MSigDB Hallmark
 #'
 #' More data sets can be appended to the current set to explore other biologies. The availability of these sources is dependent on their own maintenance.
-pathway_sets
+"pathway_sets"

@@ -51,7 +51,7 @@ enrich_geneset <- function(gene_set)
   # random probabilities
   prandom <- random_probability(similarity_results = query_similarities,
                                 gs_size = sum(query_vector),
-                                num_sets = num_random,
+                                num_sets = nrandom,
                                 target_tfidf = tfidf_matrix,
                                 tfidf_crossprod_mat = cpm)
 

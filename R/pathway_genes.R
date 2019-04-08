@@ -1,24 +1,17 @@
 #' Genes in pathway
 #'
-#' Returns the number and ids of the genes in the query set that are present in a given pathway.
+#' Returns the number of genes in the query set that are present in a given pathway.
 #'
 #' @param gene_set Query gene set.  IDs of genes match colnames of tf-idf matrix.
 #' @param pathway_tfidf tf-idf matrix computed with \code{\link{tfidf}}
-#' @return Returns Nx2 tibble with number of genes and gene names matched to any given pathway.
+#' @return Returns vector with number of genes matched to any given pathway.
 pathway_genes <- function(gene_set, pathway_tfidf) {
 
-  num_genes <- integer(nrow(pathway_tfidf))
-  gene_names <- rep(NA, nrow(pathway_tfidf))
+  x <- which(colnames(pathway_tfidf) %in% gene_set)
+  y <- pathway_tfidf[, x]
+  y[y != 0] <- 1
+  y <- rowSums(y)
 
-  for(i in seq(1, nrow(pathway_tfidf))) {
-    all_found <- intersect(names(which(pathway_tfidf[i, ] != 0)), gene_set)
-    num_genes[i] <- length(all_found)
-    gene_names[i] <- paste(all_found, collapse = " | ")
-  }
-
-  gp <- data_frame(number_genes = num_genes,
-                   gene_names = gene_names)
-
-  return(gp)
+  return(y)
 
 }

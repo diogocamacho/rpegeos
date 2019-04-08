@@ -19,11 +19,10 @@ geneset_selection <- function() {
   message("[14] Gene Ontology: Cellular Component")
   message("[15] Gene Ontology: Molecular Function")
   message("[16] Broad Hallmark")
-  message("[17] Run all")
   message("")
   selection <- readline(promp = "Selection: ")
   selection <- as.integer(selection)
-  if (selection %in% seq(1, 17)) {
+  if (selection %in% seq(1, 16)) {
     return(selection)
   }
   else {

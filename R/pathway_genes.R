@@ -20,7 +20,7 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
     y_up <- pathway_tfidf[, x_up]
     y_up[y_up != 0] <- 1
     y_up <- rowSums(y_up)
-  } else if length(x_up) == 1 {
+  } else if (length(x_up) == 1) {
     y_up <- pathway_tfidf[, x_up]
     y_up[y_up != 0] <- 1
   } else {
@@ -32,7 +32,7 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
     y_down <- pathway_tfidf[, x_down]
     y_down[y_down != 0] <- 1
     y_down <- rowSums(y_down)
-  } else if length(x_down) == 1 {
+  } else if (length(x_down) == 1) {
     y_down <- pathway_tfidf[, x_down]
     y_down[y_down != 0] <- 1
   } else {

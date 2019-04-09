@@ -5,14 +5,15 @@
 #' Additionally, the algorithm will generate a set of random gene sets that will be used to determine the probability of a given enrichment being random.
 #' The output of the wrapper is a tidy data frame with all the enrichment scores that are better than 0.
 #'
-#' @param gene_set Query gene set of interest, provided as Entrez gene IDs.
+#' @param gene_set Query gene set of interest. Should be a Nx3 matrix, where column 1 is Entrez ID, column 2 is fold-change, and column 3 is p-value (recommend using FDR corrected p-values from a package like `limma` or `DESeq2`)
 #' @return A tibble with columns geneset, number_genes, cosine_similarity, and probability_random.
 enrich_geneset <- function(gene_set)
 {
 
   message("Checks and balances...")
   if(missing(gene_set)) stop("Need gene set.")
-  if(length(gene_set) == 0) stop("No genes in gene set.")
+  if(nrow(gene_set) == 0) stop("No genes in gene set.")
+  if(ncol(gene_set) != 3) stop("Incorrect format for gene set. Please revise.")
 
 
   message("--- Pathway enrichments with rPEGEOS ---")
@@ -20,14 +21,18 @@ enrich_geneset <- function(gene_set)
 
   gs <- geneset_selection()
   message("")
-  nrandom <- user_inputs()
+  ui <- user_inputs()
   message("")
 
   tmp <- rpegeos::pathway_sets[[gs]]
 
   # match genes
   message("Counting gene representation...")
-  genes_per_pathway <- pathway_genes(gene_set = gene_set, pathway_tfidf = tmp$tfidf)
+  genes_per_pathway <- pathway_genes(gene_set = gene_set[, 1],
+                                     pathway_tfidf = tmp$tfidf)
+
+  up_genes <- length(which(gene_set[, 2] > ui[[1]] & gene_set[, 3] < ui[[2]]))
+  down_genes <- length(which(gene_set[, 2] < -ui[[1]] & gene_set[, 3] < ui[[2]]))
 
   # clean up pathways to match to:
   # we will remove those pathways that have no genes mapped to it
@@ -35,6 +40,8 @@ enrich_geneset <- function(gene_set)
   nix <- which(genes_per_pathway == 0)
   if(length(nix) != 0) {
     genes_per_pathway <- genes_per_pathway[-nix]
+    up_genes <- up_genes[-nix]
+    down_genes <- down_genes[-nix]
     tfidf_matrix <- tmp$tfidf[-nix, ]
     pathway_names <- tmp$geneset_name[-nix]
     cpm <- tmp$cpm[-nix]
@@ -56,24 +63,31 @@ enrich_geneset <- function(gene_set)
   message("Running random sets...")
   prandom <- random_probability(similarity_results = query_similarities,
                                 gs_size = sum(query_vector),
-                                num_sets = nrandom,
+                                num_sets = ui[[3]],
                                 target_tfidf = tfidf_matrix,
                                 tfidf_crossprod_mat = cpm)
 
   # results
   message("Compiling results...")
   res <- enrichment_results(query_similarities = query_similarities,
-                            random_probability = prandom,
+                            random_probability = ui[[3]],
                             number_genes = genes_per_pathway,
+                            number_genes_up = up_genes,
+                            number_genes_down = down_genes,
                             pathway_names = pathway_names)
 
   res <- res %>%
-    dplyr::mutate(., a = -log10(probability_random)) %>%
-    dplyr::mutate(., a = replace(x = a, list = probability_random == 0, values = log10(nrandom))) %>%
-    dplyr::mutate(., a = a + cosine_similarity + 1) %>%
+    dplyr::mutate(., direction_call = (number_genes_up / number_genes) - (number_genes_down / number_genes)) %>%
+    dplyr::mutate(., direction_call = replace(direction_call, direction_call < 0, -1)) %>%
+    dplyr::mutate(., direction_call = replace(direction_call, direction_call > 0, 1)) %>%
+    dplyr::mutate(., enrichment_score = -log10(probability_random)) %>%
+    dplyr::mutate(., enrichment_score = replace(x = enrichment_score, list = probability_random == 0, values = log10(ui[[3]]))) %>%
+    dplyr::mutate(., enrichment_score = enrichment_score + (cosine_similarity * number_genes) + 1) %>%
+    dplyr::mutate(., enrichment_score = enrichment_score * direction_call) %>%
     dplyr::filter(., number_genes > 1) %>%
-    dplyr::arrange(., desc(a)) %>%
-    dplyr::select(., geneset, number_genes, cosine_similarity, probability_random)
+    dplyr::arrange(., desc(enrichment_score)) %>%
+    dplyr::select(., geneset, number_genes, cosine_similarity, probability_random, enrichment_score) %>%
+    dplyr::mutate(., probability_random = replace(probability_random, probability_random == 0, 1/ui[[3]]))
 
   return(res)
   message("Done.")

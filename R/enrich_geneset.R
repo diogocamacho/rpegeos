@@ -68,7 +68,7 @@ enrich_geneset <- function(gene_set)
   message("Compiling results...")
   res <- enrichment_results(query_similarities = query_similarities,
                             random_probability = prandom,
-                            gene_counts = genes_per_pathway
+                            gene_counts = genes_per_pathway,
                             pathway_names = pathway_names)
 
   res <- res %>%

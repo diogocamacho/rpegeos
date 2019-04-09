@@ -28,20 +28,17 @@ enrich_geneset <- function(gene_set)
 
   # match genes
   message("Counting gene representation...")
-  genes_per_pathway <- pathway_genes(gene_set = gene_set[, 1],
-                                     pathway_tfidf = tmp$tfidf)
-
-  up_genes <- length(which(gene_set[, 2] > ui[[1]] & gene_set[, 3] < ui[[2]]))
-  down_genes <- length(which(gene_set[, 2] < -ui[[1]] & gene_set[, 3] < ui[[2]]))
+  genes_per_pathway <- pathway_genes(gene_set = gene_set,
+                                     pathway_tfidf = tmp$tfidf,
+                                     fthr = ui[[1]],
+                                     pthr = ui[[2]])
 
   # clean up pathways to match to:
   # we will remove those pathways that have no genes mapped to it
   message("Cleaning up gene sets...")
   nix <- which(genes_per_pathway == 0)
   if(length(nix) != 0) {
-    genes_per_pathway <- genes_per_pathway[-nix]
-    up_genes <- up_genes[-nix]
-    down_genes <- down_genes[-nix]
+    genes_per_pathway <- genes_per_pathway[-nix, ]
     tfidf_matrix <- tmp$tfidf[-nix, ]
     pathway_names <- tmp$geneset_name[-nix]
     cpm <- tmp$cpm[-nix]
@@ -71,13 +68,13 @@ enrich_geneset <- function(gene_set)
   message("Compiling results...")
   res <- enrichment_results(query_similarities = query_similarities,
                             random_probability = ui[[3]],
-                            number_genes = genes_per_pathway,
-                            number_genes_up = up_genes,
-                            number_genes_down = down_genes,
+                            number_genes = genes_per_pathway[, 3],
+                            number_genes_up = genes_per_pathway[, 1],
+                            number_genes_down = genes_per_pathway[, 2],
                             pathway_names = pathway_names)
 
   res <- res %>%
-    dplyr::mutate(., direction_call = (number_genes_up / number_genes) - (number_genes_down / number_genes)) %>%
+    dplyr::mutate(., direction_call = genes_up - genes_down) %>%
     dplyr::mutate(., direction_call = replace(direction_call, direction_call < 0, -1)) %>%
     dplyr::mutate(., direction_call = replace(direction_call, direction_call > 0, 1)) %>%
     dplyr::mutate(., enrichment_score = -log10(probability_random)) %>%

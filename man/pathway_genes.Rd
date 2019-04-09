@@ -4,12 +4,16 @@
 \alias{pathway_genes}
 \title{Genes in pathway}
 \usage{
-pathway_genes(gene_set, pathway_tfidf)
+pathway_genes(gene_set, pathway_tfidf, fthr, pthr)
 }
 \arguments{
-\item{gene_set}{Query gene set.  IDs of genes match colnames of tf-idf matrix.}
+\item{gene_set}{Query gene set of interest. Should be a Nx3 matrix, where column 1 is Entrez ID, column 2 is fold-change, and column 3 is p-value (recommend using FDR corrected p-values from a package like `limma` or `DESeq2`)}
 
 \item{pathway_tfidf}{tf-idf matrix computed with \code{\link{tfidf}}}
+
+\item{fthr}{Fold change threshold}
+
+\item{pthr}{p-value threshold}
 }
 \value{
 Returns vector with number of genes matched to any given pathway.

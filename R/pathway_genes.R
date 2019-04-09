@@ -16,13 +16,23 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
   x_up <- which(colnames(pathway_tfidf) %in% up_genes)
   x_down <- which(colnames(pathway_tfidf) %in% down_genes)
 
-  y_up <- pathway_tfidf[, x_down]
-  y_up[y_up != 0] <- 1
-  y_up <- rowSums(y_up)
+  if (length(x_up) != 0) {
+    y_up <- pathway_tfidf[, x_up]
+    y_up[y_up != 0] <- 1
+    y_up <- rowSums(y_up)
+  } else {
+    y_up <- integer(length = nrow(pathway_tfidf))
+  }
 
-  y_down <- pathway_tfidf[, x_down]
-  y_down[y_up != 0] <- 1
-  y_down <- rowSums(y_down)
+
+  if (length(x_down) != 0) {
+    y_down <- pathway_tfidf[, x_down]
+    y_down[y_up != 0] <- 1
+    y_down <- rowSums(y_down)
+  } else {
+    y_down <- integer(length = nrow(pathway_tfidf))
+  }
+
 
   gene_counts <- cbind(y_up, y_down, y_up + y_down)
 

@@ -4,16 +4,16 @@
 #'
 #' @param query_similarities Similarity score for query vector
 #' @param random_probability Probability of a given enrichment being random
-#' @param number_genes Number of genes as described in \code{\link{pathway_genes}}
+#' @param gene_counts Number of genes as described in \code{\link{pathway_genes}}
 #' @param pathway_names Pathway names for pathway set, correspond to the rows of the tf-idf matrix.
 #' @return Returns the enrichment results for each pathway given the query set.
-enrichment_results <- function(query_similarities, random_probability, number_genes, number_genes_up, number_genes_down, gene_names, pathway_names) {
+enrichment_results <- function(query_similarities, random_probability, gene_counts, gene_names, pathway_names) {
 
   res <- tibble::tibble(cosine_similarity = as.vector(query_similarities),
                         probability_random = random_probability,
-                        number_genes = number_genes,
-                        genes_up = number_genes_up,
-                        genes_down = number_genes_down)
+                        number_genes = gene_counts[, 3],
+                        genes_up = gene_counts[, 1],
+                        genes_down = gene_counts[, 2])
 
   # add pathway names and pathway source
   res <- res %>%

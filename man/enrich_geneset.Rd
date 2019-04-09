@@ -7,7 +7,7 @@
 enrich_geneset(gene_set)
 }
 \arguments{
-\item{gene_set}{Query gene set of interest, provided as Entrez gene IDs.}
+\item{gene_set}{Query gene set of interest. Should be a Nx3 matrix, where column 1 is Entrez ID, column 2 is fold-change, and column 3 is p-value (recommend using FDR corrected p-values from a package like `limma` or `DESeq2`)}
 }
 \value{
 A tibble with columns geneset, number_genes, cosine_similarity, and probability_random.

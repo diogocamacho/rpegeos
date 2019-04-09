@@ -5,7 +5,7 @@
 \title{Results data frame}
 \usage{
 enrichment_results(query_similarities, random_probability, number_genes,
-  gene_names, pathway_names)
+  number_genes_up, number_genes_down, gene_names, pathway_names)
 }
 \arguments{
 \item{query_similarities}{Similarity score for query vector}

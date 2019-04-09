@@ -27,7 +27,7 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
 
   if (length(x_down) != 0) {
     y_down <- pathway_tfidf[, x_down]
-    y_down[y_up != 0] <- 1
+    y_down[y_down != 0] <- 1
     y_down <- rowSums(y_down)
   } else {
     y_down <- integer(length = nrow(pathway_tfidf))

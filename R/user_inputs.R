@@ -8,7 +8,7 @@ user_inputs <- function() {
     message("No fold change threshold selected. Setting to default (F = 0).")
     fthr <- 0
   } else {
-    fthr <- abs(as.integer(fthr))
+    fthr <- abs(as.numeric(fthr))
   }
 
   pthr <- readline(promp = "p-value threshold: ")
@@ -19,7 +19,7 @@ user_inputs <- function() {
     message("Invalid p-value threshold. Setting to default (p < 0.05).")
     pthr <- 0.05
   } else {
-    pthr <- as.integer(pthr)
+    pthr <- as.numeric(pthr)
   }
 
   nr <- readline(promp = "Number of random sets: ")

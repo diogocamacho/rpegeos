@@ -80,8 +80,7 @@ enrich_geneset <- function(gene_set)
     dplyr::mutate(., enrichment_score = enrichment_score + (cosine_similarity * number_genes) + 1) %>%
     dplyr::mutate(., enrichment_score = replace(enrichment_score, direction_call == "down", -1 * enrichment_score)) %>%
     dplyr::filter(., number_genes > 1) %>%
-    dplyr::arrange(., desc(enrichment_score)) %>%
-    dplyr::select(., geneset, number_genes, cosine_similarity, probability_random, enrichment_score, direction_call)
+    dplyr::arrange(., desc(enrichment_score))
 
 
   return(res)

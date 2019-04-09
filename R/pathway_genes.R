@@ -16,19 +16,25 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
   x_up <- which(colnames(pathway_tfidf) %in% up_genes)
   x_down <- which(colnames(pathway_tfidf) %in% down_genes)
 
-  if (length(x_up) != 0) {
+  if (length(x_up) > 1) {
     y_up <- pathway_tfidf[, x_up]
     y_up[y_up != 0] <- 1
     y_up <- rowSums(y_up)
+  } else if length(x_up) == 1 {
+    y_up <- pathway_tfidf[, x_up]
+    y_up[y_up != 0] <- 1
   } else {
     y_up <- integer(length = nrow(pathway_tfidf))
   }
 
 
-  if (length(x_down) != 0) {
+  if (length(x_down) > 1) {
     y_down <- pathway_tfidf[, x_down]
     y_down[y_down != 0] <- 1
     y_down <- rowSums(y_down)
+  } else if length(x_down) == 1 {
+    y_down <- pathway_tfidf[, x_down]
+    y_down[y_down != 0] <- 1
   } else {
     y_down <- integer(length = nrow(pathway_tfidf))
   }

@@ -72,15 +72,15 @@ enrich_geneset <- function(gene_set)
                             pathway_names = pathway_names)
 
   res <- res %>%
-    dplyr::mutate(., direction_call = genes_up - genes_down) %>%
-    dplyr::mutate(., direction_call = replace(direction_call, direction_call < 0, "down")) %>%
-    dplyr::mutate(., direction_call = replace(direction_call, direction_call != "down", "up")) %>%
+    dplyr::mutate(., direction_call = sign(genes_up - genes_down)) %>%
+    # dplyr::mutate(., direction_call = replace(direction_call, direction_call < 0, "down")) %>%
+    # dplyr::mutate(., direction_call = replace(direction_call, direction_call != "down", "up")) %>%
     dplyr::mutate(., probability_random = replace(probability_random, probability_random == 0, 1/ui[[3]])) %>%
     dplyr::mutate(., enrichment_score = -log10(probability_random)) %>%
-    dplyr::mutate(., enrichment_score = enrichment_score + (cosine_similarity * number_genes) + 1) %>%
-    dplyr::mutate(., enrichment_score = replace(enrichment_score, direction_call == "down", -1 * enrichment_score)) %>%
-    dplyr::filter(., number_genes > 1) %>%
-    dplyr::arrange(., desc(enrichment_score))
+    dplyr::mutate(., enrichment_score = direction_call * (enrichment_score + (cosine_similarity * number_genes) + 1)) %>%
+    # dplyr::mutate(., enrichment_score = replace(enrichment_score, direction_call == "down", -1 * enrichment_score)) %>%
+    dplyr::filter(., number_genes > 1)
+    # dplyr::arrange(., desc(enrichment_score))
 
 
   return(res)

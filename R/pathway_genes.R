@@ -11,7 +11,7 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
 
 
   up_genes <- gene_set[which(gene_set[, 2] > fthr & gene_set[, 3] < pthr), 1]
-  down_genes <- gene_set[length(which(gene_set[, 2] < -fthr & gene_set[, 3] < pthr)), 1]
+  down_genes <- gene_set[which(gene_set[, 2] < -fthr & gene_set[, 3] < pthr), 1]
 
   x_up <- which(colnames(pathway_tfidf) %in% up_genes)
   x_down <- which(colnames(pathway_tfidf) %in% down_genes)

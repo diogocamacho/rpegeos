@@ -74,7 +74,7 @@ enrich_geneset <- function(gene_set)
   res <- res %>%
     dplyr::mutate(., direction_call = genes_up - genes_down) %>%
     dplyr::mutate(., direction_call = replace(direction_call, direction_call < 0, "down")) %>%
-    dplyr::mutate(., direction_call = replace(direction_call, direction_call > 0, "up")) %>%
+    dplyr::mutate(., direction_call = replace(direction_call, direction_call != "down", "up")) %>%
     dplyr::mutate(., probability_random = replace(probability_random, probability_random == 0, 1/ui[[3]])) %>%
     dplyr::mutate(., enrichment_score = -log10(probability_random)) %>%
     dplyr::mutate(., enrichment_score = enrichment_score + (cosine_similarity * number_genes) + 1) %>%

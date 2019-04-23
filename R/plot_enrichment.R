@@ -4,13 +4,13 @@
 #'
 #' @param results_df Results data frame
 #' @param max_pathways Number of top pathways to display.  Defaults to 20.
-plot_enrichment <- function(results_df, max_pathways) {
+plot_enrichment <- function(results_df) {
 
 
-  if (nrow(results_df) > 20) {
+  if (nrow(results_df) > 10) {
     results_df %>%
       dplyr::arrange(., desc(enrichment_score)) %>%
-      dplyr::slice(1:20) %>%
+      dplyr::slice(1:10) %>%
       ggplot() +
       geom_point(aes(x = enrichment_score, y = forcats::fct_reorder(geneset, enrichment_score), size = number_genes)) +
       labs(x = "Enrichment score", y = NULL) +

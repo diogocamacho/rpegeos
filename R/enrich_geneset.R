@@ -74,8 +74,13 @@ enrich_geneset <- function(gene_set)
   res <- res %>%
     dplyr::mutate(., probability_random = replace(probability_random, probability_random == 0, 1/ui[[3]])) %>%
     dplyr::mutate(., enrichment_score = cosine_similarity - log10(probability_random) + 1) %>%
-    dplyr::filter(., number_genes > 1) %>%
+    # dplyr::filter(., number_genes > 1) %>%
     dplyr::arrange(., desc(enrichment_score))
+
+  # plotting results
+  # first, volcano plot of data
+
+  # now enrichment results
 
 
   return(res)

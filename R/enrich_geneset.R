@@ -77,16 +77,25 @@ enrich_geneset <- function(gene_set)
 
   # plotting results
   # first, volcano plot of data
-  p1 <- plot_volcano(gene_set = gene_set,
-                     fthr = ui[[1]],
-                     pthr = ui[[2]])
+  # p1 <- plot_volcano(gene_set = gene_set,
+  #                    fthr = ui[[1]],
+  #                    pthr = ui[[2]])
 
   # now enrichment results
-  p2 <- plot_enrichment(results_df = res,
-                        max_pathways = ui[[4]])
+  # p2 <- plot_enrichment(results_df = res)
+  # p2
 
-  p2
   return(res)
-  message("Done.")
-
+  message("")
+  message("----------")
+  message("Summary: ")
+  message(paste("Number of pathways with probability random < 0.001: ",
+                res %>% dplyr::filter(., probability_random < 0.001) %>% nrow))
+  message(paste("Number of pathways with probability random < 0.01: ",
+                res %>% dplyr::filter(., probability_random < 0.01) %>% nrow))
+  message(paste("Top 10 enriched pathways: "))
+  res %>% dplyr::slice(1:10) %>% dplyr::select(., geneset, enrichment_score)
+  message("----------")
+  message("")
+  message("** DONE **")
 }

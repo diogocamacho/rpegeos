@@ -31,7 +31,7 @@ random_probability <- function(similarity_results, gene_set, fthr, pthr, num_set
   # compute probability of being random
   ps <- matrix(0, nrow = nrow(a3), ncol = ncol(a3))
   for (i in seq(1, nrow(ps))) {
-    a <- which(cs[i, ] > query_similarities[i])
+    a <- which(cs[i, ] > similarity_results[i])
     ps[i, a] <- 1
   }
   ps <- rowSums(ps) / ncol(ps)

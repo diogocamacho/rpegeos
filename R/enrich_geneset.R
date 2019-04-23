@@ -82,10 +82,9 @@ enrich_geneset <- function(gene_set)
   #                    pthr = ui[[2]])
 
   # now enrichment results
-  # p2 <- plot_enrichment(results_df = res)
+  p2 <- plot_enrichment(results_df = res)
   # p2
 
-  return(res)
   message("")
   message("----------")
   message("Summary: ")
@@ -93,9 +92,12 @@ enrich_geneset <- function(gene_set)
                 res %>% dplyr::filter(., probability_random < 0.001) %>% nrow))
   message(paste("Number of pathways with probability random < 0.01: ",
                 res %>% dplyr::filter(., probability_random < 0.01) %>% nrow))
-  message(paste("Top 10 enriched pathways: "))
-  res %>% dplyr::slice(1:10) %>% dplyr::select(., geneset, enrichment_score)
+  message("Top 10 enriched pathways: ")
+  print(res %>% dplyr::slice(1:10) %>% dplyr::select(., geneset, enrichment_score) %>% as.data.frame)
   message("----------")
   message("")
+  plot(p2)
   message("** DONE **")
+  return(res)
+
 }

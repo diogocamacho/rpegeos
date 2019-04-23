@@ -15,6 +15,10 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
 
   x_up <- which(colnames(pathway_tfidf) %in% up_genes)
   x_down <- which(colnames(pathway_tfidf) %in% down_genes)
+  x_total <- which(colnames(pathway_tfidf) %in% gene_set[, 1]) # <-- possible number of genes in gene set
+  path_count <- pathway_tfidf[, x_total]
+  path_count[path_count != 0] <- 1
+  path_count <- rowSums(path_count)
 
   if (length(x_up) > 1) {
     y_up <- pathway_tfidf[, x_up]
@@ -40,7 +44,11 @@ pathway_genes <- function(gene_set, pathway_tfidf, fthr, pthr) {
   }
 
 
-  gene_counts <- cbind(y_up, y_down, y_up + y_down)
+  gene_counts <- tibble::tibble(num_up = y_up,
+                                num_down = y_down,
+                                num_diff = y_up + y_down,
+                                tot = path_count,
+                                prop = (y_up + y_down) / path_count)
 
   return(gene_counts)
 

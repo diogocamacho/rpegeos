@@ -11,7 +11,8 @@ enrichment_results <- function(query_similarities, random_probability, gene_coun
 
   res <- tibble::tibble(cosine_similarity = as.vector(query_similarities),
                         probability_random = random_probability,
-                        number_genes = gene_counts[, 3])
+                        number_genes = gene_counts$num_diff,
+                        pathway_proportion = gene_counts$prop)
 
   # add pathway names and pathway source
   res <- res %>%

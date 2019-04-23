@@ -4,10 +4,8 @@
 #'
 #' @param results_df Results data frame
 #' @param max_pathways Number of top pathways to display.  Defaults to 20.
-plot_enrichment <- function(results_df, max_pathways)
-{
+plot_enrichment <- function(results_df, max_pathways) {
 
-  if(missing(max_pathways)) max_pathways <- 20
 
   if (nrow(yy) > 20) {
     results_df %>%
@@ -33,7 +31,4 @@ plot_enrichment <- function(results_df, max_pathways)
             legend.position = "none",
             panel.grid = element_blank())
   }
-
-
-
 }

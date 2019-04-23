@@ -13,8 +13,7 @@ enrich_geneset <- function(gene_set)
   message("Checks and balances...")
   if(missing(gene_set)) stop("Need gene set.")
   if(nrow(gene_set) == 0) stop("No genes in gene set.")
-  if(ncol(gene_set) != 3) stop("Incorrect format for gene set. Please revise.")
-
+  if(ncol(gene_set) != 3) stop("Incorrect format for gene set. Gene set is an Nx3 matrix where column 1 is EntrezID, column 2 is fold change, and column 3 is fold change p-value.")
 
   message("--- Pathway enrichments with rPEGEOS ---")
   message("")
@@ -34,7 +33,7 @@ enrich_geneset <- function(gene_set)
   # clean up pathways to match to:
   # we will remove those pathways that have no genes mapped to it
   message("Cleaning up gene sets...")
-  nix <- which(genes_per_pathway == 0)
+  nix <- which(genes_per_pathway$num_diff == 0)
   if(length(nix) != 0) {
     genes_per_pathway <- genes_per_pathway[-nix, ]
     tfidf_matrix <- tmp$tfidf[-nix, ]
@@ -74,15 +73,19 @@ enrich_geneset <- function(gene_set)
   res <- res %>%
     dplyr::mutate(., probability_random = replace(probability_random, probability_random == 0, 1/ui[[3]])) %>%
     dplyr::mutate(., enrichment_score = cosine_similarity - log10(probability_random) + 1) %>%
-    # dplyr::filter(., number_genes > 1) %>%
     dplyr::arrange(., desc(enrichment_score))
 
   # plotting results
   # first, volcano plot of data
+  p1 <- plot_volcano(gene_set = gene_set,
+                     fthr = ui[[1]],
+                     pthr = ui[[2]])
 
   # now enrichment results
+  p2 <- plot_enrichment(results_df = res,
+                        max_pathways = ui[[4]])
 
-
+  p2
   return(res)
   message("Done.")
 

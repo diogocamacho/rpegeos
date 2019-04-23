@@ -20,11 +20,17 @@ To make it easier to run, a wrapper is also deployed.  To enrich a gene set (pro
 ES <- enrich_geneset(gene_set)
 ```
 
-where `gene_set` is a vector of gene IDs. Follow on-screen instructions and you're set!
+where `gene_set` is an Nx3 matrix where the columns are:
+
+  - Column 1: Entrez IDs
+  - Column 2: Log2(fold change)
+  - Column 3: p-value (or adjusted p-value) for differential expression
+  
+There is no need to pre-filter the gene set, as `rPEGEOS` will do that for you, based on thresholds defined by the user. Follow on-screen instructions and you are all set!
 
 
 ### Plotting et al.
-The protocol above will generate all the necessary elements to generate a final results data frame.  The results can be plotted with `ggplot2` or your favorite plotting tools.
+The protocol above will generate all the necessary elements to generate a final results data frame.  The results can be plotted with `ggplot2` or your favorite plotting tools. A plot of the top enrichment results will be generated as a consequence of running the wrapper.
 
 
 ### In the works

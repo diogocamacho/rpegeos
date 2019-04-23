@@ -7,7 +7,7 @@
 plot_enrichment <- function(results_df, max_pathways) {
 
 
-  if (nrow(yy) > 20) {
+  if (nrow(results_df) > 20) {
     results_df %>%
       dplyr::arrange(., desc(enrichment_score)) %>%
       dplyr::slice(1:20) %>%

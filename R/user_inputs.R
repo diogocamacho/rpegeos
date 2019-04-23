@@ -30,14 +30,14 @@ user_inputs <- function() {
     nr <- as.integer(nr)
   }
 
-  np <- readline(promp = "Number of pathways to display: ")
-  if (np == "") {
-    message("No number of random sets selected. Setting to default (N = 20).")
-    np <- 20
-  } else {
-    np <- as.integer(np)
-  }
+  # np <- readline(promp = "Number of pathways to display: ")
+  # if (np == "") {
+  #   message("No number of random sets selected. Setting to default (N = 20).")
+  #   np <- 20
+  # } else {
+  #   np <- as.integer(np)
+  # }
 
-  ui <- list(fthr, pthr, nr, np)
+  ui <- list(fthr, pthr, nr)
   return(ui)
 }

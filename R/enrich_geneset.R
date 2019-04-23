@@ -48,7 +48,7 @@ enrich_geneset <- function(gene_set)
   # query_vector <- matrix(0,ncol=ncol(sparse_tfidf),nrow=1)
   message("Generating query vector...")
   query_vector <- integer(length = ncol(tfidf_matrix))
-  query_vector[which(colnames(tfidf_matrix) %in% gene_set)] <- 1
+  query_vector[which(colnames(tfidf_matrix) %in% gene_set[, 1])] <- 1
 
   # cosine similarity between gene set and pathway_sets
   message("Computing cosine similarities...")
@@ -59,7 +59,9 @@ enrich_geneset <- function(gene_set)
   # random probabilities
   message("Running random sets...")
   prandom <- random_probability(similarity_results = query_similarities,
-                                gs_size = sum(query_vector),
+                                gene_set = gene_set,
+                                fthr = ui[[1]],
+                                pthr = ui[[2]],
                                 num_sets = ui[[3]],
                                 target_tfidf = tfidf_matrix,
                                 tfidf_crossprod_mat = cpm)
@@ -72,15 +74,11 @@ enrich_geneset <- function(gene_set)
                             pathway_names = pathway_names)
 
   res <- res %>%
-    dplyr::mutate(., direction_call = sign(genes_up - genes_down)) %>%
-    # dplyr::mutate(., direction_call = replace(direction_call, direction_call < 0, "down")) %>%
-    # dplyr::mutate(., direction_call = replace(direction_call, direction_call != "down", "up")) %>%
     dplyr::mutate(., probability_random = replace(probability_random, probability_random == 0, 1/ui[[3]])) %>%
     dplyr::mutate(., enrichment_score = -log10(probability_random)) %>%
-    dplyr::mutate(., enrichment_score = direction_call * (enrichment_score + (cosine_similarity * number_genes) + 1)) %>%
-    # dplyr::mutate(., enrichment_score = replace(enrichment_score, direction_call == "down", -1 * enrichment_score)) %>%
+    dplyr::mutate(., enrichment_score = enrichment_score + (cosine_similarity * number_genes) + 1) %>%
     dplyr::filter(., number_genes > 1)
-    # dplyr::arrange(., desc(enrichment_score))
+    dplyr::arrange(., desc(enrichment_score))
 
 
   return(res)

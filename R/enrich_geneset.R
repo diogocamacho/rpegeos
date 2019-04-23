@@ -20,9 +20,7 @@ enrich_geneset <- function(gene_set)
   message("")
 
   gs <- geneset_selection()
-  message("")
   ui <- user_inputs()
-  message("")
 
   tmp <- rpegeos::pathway_sets[[gs]]
 
@@ -64,7 +62,7 @@ enrich_geneset <- function(gene_set)
                                 pthr = ui[[2]],
                                 num_sets = ui[[3]],
                                 target_tfidf = tfidf_matrix,
-                                tfidf_crossprod_mat = cpm)
+                                tfidf_crossprod = cpm)
 
   # results
   message("Compiling results...")

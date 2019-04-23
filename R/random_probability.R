@@ -8,9 +8,9 @@
 #' @param pthr P-value threshold for differential expression
 #' @param num_sets Number of random sets to generate
 #' @param target_tfidf Pathway tf-idf matrix.
-#' @param tfidf_crossprod_mat Cross-product matrix for pathway tf-idf.
+#' @param tfidf_crossprod Cross-product vector for pathway tf-idf.
 #' @return A vector of random probabilities for each pathway given the gene set size.
-random_probability <- function(similarity_results, gene_set, fthr, pthr, num_sets, target_tfidf, tfidf_crossprod_mat) {
+random_probability <- function(similarity_results, gene_set, fthr, pthr, num_sets, target_tfidf, tfidf_crossprod) {
 
   y1 <- matrix(0, ncol = ncol(target_tfidf), nrow = num_sets)
   y2 <- which(colnames(target_tfidf) %in% gene_set[, 1])
@@ -24,8 +24,8 @@ random_probability <- function(similarity_results, gene_set, fthr, pthr, num_set
 
   # now compute cosine similarity
   a1 <- apply(y1, 1, crossprod)
-  a2 <- sapply(a1, function(y) sqrt(cpm * y))
-  a3 <- apply(y1, 1, function(y) tfidf_matrix %*% y)
+  a2 <- sapply(a1, function(y) sqrt(tfidf_crossprod * y))
+  a3 <- apply(y1, 1, function(y) target_tfidf %*% y)
   cs <- a3 / a2 # <-- cosine similarity
 
   # compute probability of being random

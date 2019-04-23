@@ -4,13 +4,17 @@
 \alias{random_probability}
 \title{Random probability}
 \usage{
-random_probability(similarity_results, gs_size, num_sets, target_tfidf,
-  tfidf_crossprod_mat)
+random_probability(similarity_results, gene_set, fthr, pthr, num_sets,
+  target_tfidf, tfidf_crossprod_mat)
 }
 \arguments{
 \item{similarity_results}{Vector of cosine similarities}
 
-\item{gs_size}{Size of the query set}
+\item{gene_set}{Query gene set}
+
+\item{fthr}{Fold-change threshold for differential expression}
+
+\item{pthr}{P-value threshold for differential expression}
 
 \item{num_sets}{Number of random sets to generate}
 

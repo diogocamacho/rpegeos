@@ -4,15 +4,15 @@
 \alias{enrichment_results}
 \title{Results data frame}
 \usage{
-enrichment_results(query_similarities, random_probability, number_genes,
-  number_genes_up, number_genes_down, gene_names, pathway_names)
+enrichment_results(query_similarities, random_probability, gene_counts,
+  gene_names, pathway_names)
 }
 \arguments{
 \item{query_similarities}{Similarity score for query vector}
 
 \item{random_probability}{Probability of a given enrichment being random}
 
-\item{number_genes}{Number of genes as described in \code{\link{pathway_genes}}}
+\item{gene_counts}{Number of genes as described in \code{\link{pathway_genes}}}
 
 \item{pathway_names}{Pathway names for pathway set, correspond to the rows of the tf-idf matrix.}
 }

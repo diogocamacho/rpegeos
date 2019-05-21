@@ -5,7 +5,7 @@
 \title{Random probability}
 \usage{
 random_probability(similarity_results, gene_set, fthr, pthr, num_sets,
-  target_tfidf, tfidf_crossprod_mat)
+  target_tfidf, tfidf_crossprod)
 }
 \arguments{
 \item{similarity_results}{Vector of cosine similarities}
@@ -20,7 +20,7 @@ random_probability(similarity_results, gene_set, fthr, pthr, num_sets,
 
 \item{target_tfidf}{Pathway tf-idf matrix.}
 
-\item{tfidf_crossprod_mat}{Cross-product matrix for pathway tf-idf.}
+\item{tfidf_crossprod}{Cross-product vector for pathway tf-idf.}
 }
 \value{
 A vector of random probabilities for each pathway given the gene set size.

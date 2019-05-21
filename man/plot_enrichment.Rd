@@ -4,14 +4,12 @@
 \alias{plot_enrichment}
 \title{Plotting tf-idf enrichments}
 \usage{
-plot_enrichment(results_df, random_thr, max_pathways)
+plot_enrichment(results_df)
 }
 \arguments{
 \item{results_df}{Results data frame}
 
-\item{random_thr}{Threshold for probability of enrichment being random.  Defaults to 0.05.}
-
-\item{max_pathways}{Number of top pathways to display.  Defaults to 25.}
+\item{max_pathways}{Number of top pathways to display.  Defaults to 20.}
 }
 \description{
 Plots the tf-idf enrichments, ranked by similarity score.

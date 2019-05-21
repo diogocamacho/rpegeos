@@ -13,13 +13,13 @@
 random_probability <- function(similarity_results, gene_set, fthr, pthr, num_sets, target_tfidf, tfidf_crossprod) {
 
   y1 <- matrix(0, ncol = ncol(target_tfidf), nrow = num_sets)
-  y2 <- which(colnames(target_tfidf) %in% gene_set[, 1])
+  # y2 <- which(colnames(target_tfidf) %in% gene_set[, 1])
   # x2 <- length(which(abs(gene_set[, 2]) > fthr & gene_set[, 3] < pthr))
   x2 <- nrow(gene_set)
 
   # this generates the random set from the query data (!) before computing similarity
   for (i in seq(1, nrow(y1))) {
-    a <- sample(y2, size = x2, replace = FALSE)
+    a <- sample(ncol(target_tfidf), size = x2, replace = FALSE)
     y1[i, a] <- 1
   }
 
